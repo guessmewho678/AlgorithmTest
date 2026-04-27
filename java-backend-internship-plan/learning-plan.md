@@ -592,6 +592,8 @@ Spring Boot、Spring AI 或 LangChain4j、PostgreSQL + pgvector、Redis、SSE、
 
 ## 投递节奏
 
+具体岗位线索、投递记录模板，以及日常实习、转正实习、秋招春招分别推荐使用的招聘软件，见：[日常实习机会搜索清单（2026-04-27）](./internship-opportunities-2026-04-27.md)。
+
 第 1 到 4 周：
 
 - 不急着投递，先补基础。

@@ -18,7 +18,8 @@
 │   ├── 竞赛实战技巧与调试对拍清单.md
 │   └── 竞赛实战技巧与调试对拍清单.pdf
 └── java-backend-internship-plan/
-    └── learning-plan.md
+    ├── learning-plan.md
+    └── internship-opportunities-2026-04-27.md
 ```
 
 ## Java 后端与 AI 实习计划
@@ -26,6 +27,7 @@
 核心文档：
 
 - [Java 后端与 AI 应用开发实习准备计划](./java-backend-internship-plan/learning-plan.md)
+- [日常实习机会搜索清单（2026-04-27）](./java-backend-internship-plan/internship-opportunities-2026-04-27.md)
 
 这份计划包含：
 
@@ -33,6 +35,7 @@
 - 项目路线：一个传统 Java 后端项目，一个 AI 应用项目。
 - 推荐资料：JavaGuide、小林 coding、二哥的 Java 进阶之路、黑马 Redis/黑马点评、Spring AI、LangChain4j、派聪明 RAG 架构等。
 - 牛客双非面经观察：整理 50 篇双非 Java/后端相关面经、实习复盘、秋招春招总结和简历拷打样本。
+- 日常实习搜索：按福州、厦门、北上广深杭筛选更适合双非本科大一的中小公司和开发相关岗位线索。
 - 简历模板与面试准备：项目描述、Redis 场景、RAG 项目亮点、八股复述方法和投递节奏。
 
 推荐执行方式：
