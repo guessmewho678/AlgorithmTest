@@ -4,6 +4,12 @@
 
 更新时间：2026-04-27。比赛规则每年、每站可能不同，赛前必须看当年正式通知。
 
+三份文档的分工：
+
+- 本文解决“库函数和语言 API 怎么写”的问题。
+- `竞赛算法板子背诵清单.md` 解决“哪些算法模板要背、什么题型用”的问题。
+- `竞赛实战技巧与调试对拍清单.md` 解决“怎么写得稳、怎么调试、怎么对拍”的问题。
+
 ## 1. 比赛中能不能看资料
 
 结论：不要假设“比赛时一定能查文档”。训练时按“完全不能查资料”准备最稳。
@@ -25,7 +31,7 @@
 
 赛前环境检查：
 
-- 确认 C++ 标准。ICPC World Finals 2025 环境说明使用 `g++ 13.2.0` 和 `-std=gnu++20`，但国内区域赛、蓝桥杯、天梯赛可能仍以 C++14/17 或本地 IDE 为准。
+- 确认 C++ 标准。ICPC World Finals 2025 环境说明使用 `g++ 13.2.0` 和 `-std=gnu++20`；ICPC EUC 2026 计划环境使用 `g++ 14.2.0` 和 `-std=c++23`。但国内区域赛、蓝桥杯、天梯赛可能仍以 C++14/17 或本地 IDE 为准。
 - 不确定时按 C++17 写最稳：`structured binding`、`gcd/lcm`、`optional` 这类可以用；`ranges`、`std::span`、`std::format` 不建议作为默认依赖。
 - 赛前确认栈大小、是否静态链接、是否支持 `bits/stdc++.h`、评测机语言版本、文件扩展名要求。
 - 训练时不要依赖 IDE 自动补全；常用函数名、头文件、比较器写法要能手写。
@@ -41,7 +47,7 @@ using namespace std;
 using ll = long long;
 using pii = pair<int, int>;
 const int INF = 0x3f3f3f3f;
-const ll LINF = 4e18;
+const ll LINF = (1LL << 62);
 
 int main() {
     ios::sync_with_stdio(false);
@@ -70,6 +76,10 @@ int main() {
 #include <sstream>
 #include <array>
 #include <chrono>
+#include <limits>
+#include <cstdint>
+#include <cctype>
+#include <functional>
 ``` 
 
 ## 3. 输入输出 API
@@ -169,6 +179,15 @@ for (auto it = a.begin(); it != a.end(); ) {
 ```cpp
 vector<vector<int>> g(n, vector<int>(m, 0));
 ```
+
+固定长度数组：
+
+```cpp
+array<int, 4> dx = {-1, 0, 1, 0};
+array<int, 4> dy = {0, 1, 0, -1};
+```
+
+`array` 长度是编译期常量，适合方向数组、小矩阵、小状态；需要运行期长度时用 `vector`。
 
 ## 5. string
 
