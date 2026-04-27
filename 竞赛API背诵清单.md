@@ -23,6 +23,13 @@
 - 算法知识：<https://oi-wiki.org/>、<https://cp-algorithms.com/>
 - 比赛规则入口：ICPC <https://icpc.global/>，CCPC <https://ccpc.io/>，蓝桥杯 <https://dasai.lanqiao.cn/>，天梯赛 <https://gplt.patest.cn/regulation>
 
+赛前环境检查：
+
+- 确认 C++ 标准。ICPC World Finals 2025 环境说明使用 `g++ 13.2.0` 和 `-std=gnu++20`，但国内区域赛、蓝桥杯、天梯赛可能仍以 C++14/17 或本地 IDE 为准。
+- 不确定时按 C++17 写最稳：`structured binding`、`gcd/lcm`、`optional` 这类可以用；`ranges`、`std::span`、`std::format` 不建议作为默认依赖。
+- 赛前确认栈大小、是否静态链接、是否支持 `bits/stdc++.h`、评测机语言版本、文件扩展名要求。
+- 训练时不要依赖 IDE 自动补全；常用函数名、头文件、比较器写法要能手写。
+
 ## 2. C++ 头文件与基础模板
 
 ICPC/CCPC/Linux 环境常用：
@@ -60,7 +67,10 @@ int main() {
 #include <cstring>
 #include <numeric>
 #include <iomanip>
-```
+#include <sstream>
+#include <array>
+#include <chrono>
+``` 
 
 ## 3. 输入输出 API
 
@@ -83,6 +93,25 @@ getline(cin, s);
 
 `cin >> n` 后如果要 `getline`，必须吃掉行尾换行。
 
+读到 EOF：
+
+```cpp
+while (cin >> x) {
+    // use x
+}
+```
+
+整行解析，天梯赛和模拟题很常见：
+
+```cpp
+string line;
+getline(cin, line);
+stringstream ss(line);
+while (ss >> x) {
+    // use x
+}
+```
+
 C 风格高性能输入输出：
 
 ```cpp
@@ -97,7 +126,9 @@ vector<int> a;               // 空
 vector<int> b(n);            // n 个 0
 vector<int> c(n, -1);        // n 个 -1
 
+a.reserve(n);
 a.push_back(x);
+a.emplace_back(x);
 a.pop_back();
 a.size();
 a.empty();
@@ -112,6 +143,8 @@ sort(a.begin(), a.end());
 reverse(a.begin(), a.end());
 ```
 
+注意：`a.size()` 返回无符号类型，和 `int` 混用时容易出警告或下溢。循环倒着写时推荐先转成 `int n = (int)a.size();`。
+
 删除与去重：
 
 ```cpp
@@ -120,6 +153,15 @@ a.erase(a.begin() + l, a.begin() + r); // 删除 [l, r)
 
 sort(a.begin(), a.end());
 a.erase(unique(a.begin(), a.end()), a.end());
+```
+
+遍历时删除：
+
+```cpp
+for (auto it = a.begin(); it != a.end(); ) {
+    if (*it == x) it = a.erase(it);
+    else ++it;
+}
 ```
 
 二维数组：
@@ -165,6 +207,18 @@ toupper(c);
 ```
 
 注意：`isdigit` 等函数建议写成 `isdigit((unsigned char)c)`，避免负 `char` 出问题。
+
+字符串分割：
+
+```cpp
+stringstream ss(s);
+string part;
+while (getline(ss, part, ',')) {
+    // comma separated part
+}
+```
+
+`s.find()` 返回的是 `size_t`，找不到时是 `string::npos`。不要把结果直接存进 `int` 后再和 `npos` 比较。
 
 ## 6. pair / tuple
 
@@ -298,6 +352,15 @@ ms.erase(ms.find(x));         // 只删一个，前提是存在
 ms.erase(x);                  // 删除所有等于 x 的元素
 ```
 
+遍历时删除 `set/map` 元素：
+
+```cpp
+for (auto it = s.begin(); it != s.end(); ) {
+    if (bad(*it)) it = s.erase(it);
+    else ++it;
+}
+```
+
 ## 10. unordered_map / unordered_set
 
 ```cpp
@@ -309,6 +372,25 @@ mp.max_load_factor(0.7);
 ```
 
 适合平均 O(1) 查询。遇到卡哈希或需要有序遍历，用 `map/set`。
+
+整数键防卡哈希：
+
+```cpp
+struct CustomHash {
+    static uint64_t splitmix64(uint64_t x) {
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31);
+    }
+    size_t operator()(uint64_t x) const {
+        static const uint64_t seed =
+            chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(x + seed);
+    }
+};
+unordered_map<long long, int, CustomHash> safe_mp;
+```
 
 自定义 pair 哈希：
 
@@ -369,6 +451,9 @@ fill(a.begin(), a.end(), 0);
 copy(a.begin(), a.end(), b.begin());
 count(a.begin(), a.end(), x);
 find(a.begin(), a.end(), x);
+nth_element(a.begin(), a.begin() + k, a.end()); // 第 k 小归位，左侧不保证有序
+all_of(a.begin(), a.end(), [](int x) { return x > 0; });
+any_of(a.begin(), a.end(), [](int x) { return x == 0; });
 ```
 
 ## 12. numeric
@@ -420,6 +505,23 @@ if (fabs(a - b) < EPS) {}
 ```cpp
 long long ceil_div(long long a, long long b) {
     return (a + b - 1) / b;   // 仅适用于 a,b 非负且 b>0
+}
+```
+
+`long long` 乘法可能溢出时：
+
+```cpp
+using i128 = __int128_t;
+
+i128 v = (i128)a * b;
+
+void print_i128(i128 x) {
+    if (x < 0) {
+        cout << '-';
+        x = -x;
+    }
+    if (x >= 10) print_i128(x / 10);
+    cout << char('0' + x % 10);
 }
 ```
 
@@ -659,12 +761,28 @@ d = defaultdict(int)
 - 日期函数
 - KMP、Trie、线段树、树状数组等算法模板
 
-## 22. 来源与规则参考
+## 22. 提交前检查清单
+
+每题提交前快速扫一遍：
+
+- 是否清空了多组数据中的全局数组、图、队列、优先队列。
+- 数组大小是否覆盖最大 `n/m`，线段树是否开到 `4*n`，Trie/边数组是否按总量开。
+- 距离、方案数、乘法是否需要 `long long` 或 `__int128`。
+- 二分边界是求最小可行值还是最大可行值。
+- 比较函数是否满足严格弱序，没有写成 `<=`。
+- `priority_queue` 小根堆是否写了 `greater<>`。
+- `mod` 运算后是否可能为负，必要时 `(x % MOD + MOD) % MOD`。
+- 递归深度是否可能爆栈，树/图深 DFS 可改迭代或确认环境。
+- 输出格式是否有多余空格、换行、精度、大小写。
+- 本地样例、最小边界、最大边界、随机小数据对拍至少过一种。
+
+## 23. 来源与规则参考
 
 - ICPC World Finals Programming Environment 说明：<https://docs.icpc.global/worldfinals-programming-environment>
-- ICPC 赛区 Team Reference Document 规则示例：各赛区规则会单独发布，常见为 25 页左右纸质 TRD，但页数、纸张、单双面、是否可手写标注都要看当站规则。
+- ICPC 区域赛规则示例：<https://nc.na.icpc.global/rules/>。各赛区规则会单独发布，常见为纸质或 PDF Team Reference Document，但页数、纸张、单双面、是否可手写标注都要看当站规则。
 - CCPC 第六届总决赛参赛指南：<https://final.ccpc.io/rules/>
 - 蓝桥杯官网：<https://dasai.lanqiao.cn/>
+- 蓝桥杯个人赛规则入口示例：<https://dasai.lanqiao.cn/pages/v7/dasai/competition/competition_info.html?c=11&m=35>
 - 蓝桥杯个人赛管理办法公开转载：<https://www.newunivs.com/2907.html>
 - 蓝桥杯第十五届个人线上比赛手册示例：<https://x-static.lanqiao.cn/upload/202405/courseimg/f123187c-8e16-445a-8cd3-9d73689e8901.pdf>
 - 团体程序设计天梯赛竞赛规程：<https://gplt.patest.cn/regulation>
